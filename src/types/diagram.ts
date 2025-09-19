@@ -44,6 +44,9 @@ export interface DiagramConfig {
   gridSize: number;
   zoom: number;
   pan: { x: number; y: number };
+  enablePagination?: boolean;
+  maxPageWidth?: number;
+  maxPageHeight?: number;
 }
 
 export interface ParserResult {
