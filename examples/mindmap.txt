@@ -1,0 +1,12 @@
+Project
+  Planning
+    Requirements
+    Timeline
+  Execution
+    Development
+    Testing
+      Unit Tests
+      Integration Tests
+  Delivery
+    Deployment
+    Monitoring
