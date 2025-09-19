@@ -1,0 +1,18 @@
+class Person {
+  +name: String
+  +age: Int
+  +getName(): String
+  +setName(name: String): Void
+  +getAge(): Int
+  +setAge(age: Int): Void
+}
+
+class Student extends Person {
+  +studentId: String
+  +getStudentId(): String
+}
+
+class Teacher extends Person {
+  +subject: String
+  +assignHomework(hw: String): Void
+}

@@ -1,0 +1,13 @@
+Client -> Api: Send login request
+Api --> AuthService: Validate credentials
+AuthService -> DB: Query user
+DB --> AuthService: User record
+AuthService --> Api: Token issued
+Api -> Client: Login success
+
+Alice -> Bob: Hello Bob
+Bob --> Service: Check availability
+Service -> Bob: OK
+Bob -> Alice: Let's proceed
+Alice --> Worker: Start job
+Worker -> Alice: Job started

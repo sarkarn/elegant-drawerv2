@@ -1,0 +1,16 @@
+actor User
+actor Admin
+
+User -> (Login)
+User -> (View Profile)
+Admin -> (Create User)
+Admin -> (Generate Reports)
+
+actor Customer
+actor Support
+actor Manager
+
+Customer -> (Place Order)
+Customer -> (Track Shipment)
+Support -> (Respond to Ticket)
+Manager -> (Approve Refund)

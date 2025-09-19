@@ -1,0 +1,14 @@
+start -> parse: Begin
+parse -> decision1: Valid input?
+decision1 -> processOK: Yes
+decision1 -> processErr: No
+processOK -> end
+processErr -> end
+
+start -> gather: Collect data
+gather -> analyze: Analyze data
+analyze -> decisionA: Threshold met?
+decisionA -> processA: Yes
+decisionA -> processB: No
+processA -> end
+processB -> end
