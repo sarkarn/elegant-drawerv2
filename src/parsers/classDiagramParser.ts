@@ -1,6 +1,6 @@
 import type { ParserResult, ClassNode, ClassAttribute, ClassMethod } from '../types/diagram';
 import { generateId } from '../utils/helpers';
-import { positionNodesHierarchically } from '../utils/layoutUtils';
+import { positionClassNodesInGrid } from '../utils/layoutUtils';
 
 export function parseClassDiagram(input: string): ParserResult {
   try {
@@ -111,14 +111,8 @@ export function parseClassDiagram(input: string): ParserResult {
       }
     }
 
-    // Apply hierarchical layout for better positioning with updated spacing
-    const layoutNodes = positionNodesHierarchically(nodes, edges, {
-      nodeWidth: 250, // Default width for fallback
-      nodeHeight: 200, // Default height for fallback  
-      horizontalSpacing: 300, // Conservative spacing
-      verticalSpacing: 250, // Conservative spacing
-      layoutDirection: 'top-down'
-    });
+    // Apply the new grid-based layout
+    const layoutNodes = positionClassNodesInGrid(nodes);
 
     return {
       success: true,

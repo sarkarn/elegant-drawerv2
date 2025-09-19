@@ -363,3 +363,35 @@ export function positionNodesWithDagre(nodes: LayoutNode[], edges: LayoutEdge[])
     };
   });
 }
+
+/**
+ * Improved grid-based layout for class diagrams
+ */
+export function positionClassNodesInGrid(nodes: LayoutNode[]): any[] {
+  const positioned: any[] = [];
+  const grid = {
+    cols: 3, // Max columns
+    colWidth: 350,
+    rowHeight: 450,
+    startX: 50,
+    startY: 50,
+  };
+
+  nodes.forEach((node, index) => {
+    const col = index % grid.cols;
+    const row = Math.floor(index / grid.cols);
+    
+    const x = grid.startX + col * grid.colWidth;
+    const y = grid.startY + row * grid.rowHeight;
+
+    positioned.push({
+      ...node,
+      x,
+      y,
+      width: node.width || 300,
+      height: node.height || 400,
+    });
+  });
+
+  return positioned;
+}
