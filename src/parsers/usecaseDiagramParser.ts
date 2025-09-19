@@ -1,6 +1,5 @@
 import type { ParserResult } from '../types/diagram';
 import { generateId } from '../utils/helpers';
-import { positionNodesHierarchically } from '../utils/layoutUtils';
 
 export function parseUsecaseDiagram(input: string): ParserResult {
   try {
@@ -52,42 +51,67 @@ export function parseUsecaseDiagram(input: string): ParserResult {
       }
     }
 
-    // Position actors and usecases with improved layout
-    const actorSpacing = 150;
+    // Position usecases first in a vertical arrangement
     const usecaseSpacing = 120;
-    const leftMargin = 100;
     const usecaseLeftMargin = 350;
     
-    const allNodes = [
-      ...actors.map((actor, index) => ({
+    const positionedUsecases = usecases.map((usecase, index) => ({
+      ...usecase,
+      x: usecaseLeftMargin,
+      y: 100 + index * usecaseSpacing,
+      width: Math.max(160, usecase.label.length * 12), // Dynamic width based on text
+      height: 80,
+    }));
+
+    // Position actors based on their connected use cases
+    let actorIndex = 0;
+    const positionedActors = actors.map((actor) => {
+      // Find all use cases connected to this actor
+      const connectedUsecases = edges
+        .filter(edge => edge.from === actor.id)
+        .map(edge => positionedUsecases.find(uc => uc.id === edge.to))
+        .filter(Boolean);
+
+      let actorY = 180; // Default Y position
+      
+      if (connectedUsecases.length > 0) {
+        // Calculate the center Y position of connected use cases
+        const usecaseYPositions = connectedUsecases.map(uc => uc.y + uc.height / 2);
+        const avgY = usecaseYPositions.reduce((sum, y) => sum + y, 0) / usecaseYPositions.length;
+        actorY = avgY - 60; // Center the actor with respect to use cases (accounting for actor height)
+      } else {
+        // If no connections, place actors in a fallback vertical arrangement
+        actorY = 100 + actorIndex * 150;
+        actorIndex++;
+      }
+
+      return {
         ...actor,
-        x: leftMargin,
-        y: 100 + index * actorSpacing,
+        x: 100, // Keep actors on the left
+        y: actorY,
         width: 100,
         height: 120,
-      })),
-      ...usecases.map((usecase, index) => ({
-        ...usecase,
-        x: usecaseLeftMargin,
-        y: 100 + index * usecaseSpacing,
-        width: Math.max(160, usecase.label.length * 12), // Dynamic width based on text
-        height: 80,
-      })),
+      };
+    });
+
+    const allNodes = [
+      ...positionedActors,
+      ...positionedUsecases,
     ];
 
-    // Apply hierarchical layout for better positioning
-    const layoutNodes = positionNodesHierarchically(allNodes, edges, {
-      nodeWidth: 140,
-      nodeHeight: 80,
-      horizontalSpacing: 200,
-      verticalSpacing: 150,
-      layoutDirection: 'left-right' // Use left-right for use case diagrams
-    });
+    // Use our custom positioning instead of hierarchical layout
+    // const layoutNodes = positionNodesHierarchically(allNodes, edges, {
+    //   nodeWidth: 140,
+    //   nodeHeight: 80,
+    //   horizontalSpacing: 200,
+    //   verticalSpacing: 150,
+    //   layoutDirection: 'left-right' // Use left-right for use case diagrams
+    // });
 
     return {
       success: true,
       data: {
-        nodes: layoutNodes,
+        nodes: allNodes, // Use our custom positioned nodes
         edges,
         metadata: { title: 'Use Case Diagram', created: new Date() },
       },
