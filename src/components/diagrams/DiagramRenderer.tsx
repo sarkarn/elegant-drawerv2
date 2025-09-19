@@ -35,6 +35,22 @@ export function DiagramRenderer() {
               extraPadding = Math.max(extraPadding, radius + 50);
             }
             
+            // For class diagrams, add extra padding for dynamic height calculation
+            if (config.type === 'class' && n.data && (n.data.attributes || n.data.methods)) {
+              const attributeCount = n.data.attributes ? n.data.attributes.length : 0;
+              const methodCount = n.data.methods ? n.data.methods.length : 0;
+              const dynamicHeight = 30 + (attributeCount * 18) + (methodCount * 18) + 20;
+              const actualHeight = Math.max(n.height, dynamicHeight);
+              
+              // Use the larger height for bounds calculation
+              return {
+                minX: n.x - extraPadding,
+                minY: n.y - extraPadding,
+                maxX: n.x + n.width + extraPadding,
+                maxY: n.y + actualHeight + extraPadding
+              };
+            }
+            
             return {
               minX: n.x - extraPadding,
               minY: n.y - extraPadding,

@@ -43,6 +43,9 @@ const defaultConfig: DiagramConfig = {
   gridSize: 20,
   zoom: 1,
   pan: { x: 0, y: 0 },
+  enablePagination: false,
+  maxPageWidth: 1200,
+  maxPageHeight: 900,
 };
 
 const defaultViewport: ViewportTransform = {

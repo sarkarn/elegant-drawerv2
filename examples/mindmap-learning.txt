@@ -1,0 +1,122 @@
+// Mindmap - Personal Learning and Development
+Personal Learning and Development
+  Technical Skills
+    Programming Languages
+      JavaScript
+        Frontend Frameworks
+          React
+          Vue.js
+          Angular
+        Backend Frameworks
+          Node.js
+          Express.js
+        Testing
+          Jest
+          Cypress
+      Python
+        Web Development
+          Django
+          Flask
+        Data Science
+          Pandas
+          NumPy
+          Scikit-learn
+        Machine Learning
+          TensorFlow
+          PyTorch
+      Java
+        Spring Framework
+        Hibernate
+        Microservices
+    Database Technologies
+      Relational Databases
+        MySQL
+        PostgreSQL
+        Oracle
+      NoSQL Databases
+        MongoDB
+        Redis
+        Cassandra
+    Cloud Platforms
+      AWS Services
+        EC2
+        S3
+        Lambda
+        RDS
+      Azure Services
+        App Service
+        Functions
+        Cosmos DB
+      Google Cloud
+        Compute Engine
+        Cloud Functions
+        Firestore
+  Soft Skills
+    Communication
+      Public Speaking
+      Written Communication
+      Active Listening
+      Presentation Skills
+    Leadership
+      Team Management
+      Decision Making
+      Conflict Resolution
+      Mentoring
+    Problem Solving
+      Analytical Thinking
+      Creative Thinking
+      Critical Thinking
+      Root Cause Analysis
+    Time Management
+      Prioritization
+      Goal Setting
+      Planning
+      Productivity Tools
+  Industry Knowledge
+    Software Architecture
+      Design Patterns
+      System Design
+      Scalability
+      Security
+    Business Understanding
+      Domain Knowledge
+      Market Awareness
+      Customer Focus
+      Product Management
+    Emerging Technologies
+      Artificial Intelligence
+      Blockchain
+      Internet of Things
+      Augmented Reality
+  Learning Methods
+    Formal Education
+      Online Courses
+      Certifications
+      University Programs
+      Workshops
+    Self-Directed Learning
+      Books and Articles
+      Documentation
+      Video Tutorials
+      Podcasts
+    Practical Experience
+      Personal Projects
+      Open Source Contributions
+      Hackathons
+      Internships
+    Community Learning
+      Meetups
+      Conferences
+      Online Forums
+      Peer Learning
+  Career Goals
+    Short-term Goals
+      Skill Development
+      Project Completion
+      Network Building
+      Performance Improvement
+    Long-term Goals
+      Career Advancement
+      Specialization
+      Leadership Roles
+      Entrepreneurship

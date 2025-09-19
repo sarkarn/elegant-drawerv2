@@ -1,0 +1,109 @@
+// Advanced Class Diagram - E-commerce System
+class Product {
+  -id: String
+  -name: String
+  -price: Double
+  -description: String
+  -category: Category
+  +getId(): String
+  +getName(): String
+  +getPrice(): Double
+  +setPrice(price: Double): Void
+  +getDescription(): String
+  +getCategory(): Category
+}
+
+class Category {
+  -id: String
+  -name: String
+  -parentCategory: Category
+  +getId(): String
+  +getName(): String
+  +getParentCategory(): Category
+  +addSubCategory(category: Category): Void
+}
+
+class User {
+  -id: String
+  -username: String
+  -email: String
+  -password: String
+  -createdAt: Date
+  +login(username: String, password: String): Boolean
+  +logout(): Void
+  +updateEmail(email: String): Void
+  +changePassword(oldPass: String, newPass: String): Boolean
+}
+
+class Customer extends User {
+  -shippingAddress: Address
+  -billingAddress: Address
+  -orders: List
+  +getShippingAddress(): Address
+  +getBillingAddress(): Address
+  +placeOrder(cart: Cart): Order
+  +getOrderHistory(): List
+}
+
+class Admin extends User {
+  -permissions: List
+  -department: String
+  +manageProducts(): Void
+  +manageUsers(): Void
+  +generateReports(): Report
+  +hasPermission(permission: String): Boolean
+}
+
+class Address {
+  -street: String
+  -city: String
+  -state: String
+  -zipCode: String
+  -country: String
+  +getFullAddress(): String
+  +validate(): Boolean
+}
+
+class Order {
+  -id: String
+  -customer: Customer
+  -items: List
+  -total: Double
+  -status: OrderStatus
+  -createdAt: Date
+  +addItem(item: OrderItem): Void
+  +removeItem(itemId: String): Void
+  +calculateTotal(): Double
+  +updateStatus(status: OrderStatus): Void
+}
+
+class OrderItem {
+  -product: Product
+  -quantity: Integer
+  -unitPrice: Double
+  +getSubTotal(): Double
+  +updateQuantity(qty: Integer): Void
+}
+
+class Cart {
+  -customer: Customer
+  -items: List
+  -createdAt: Date
+  +addProduct(product: Product, qty: Integer): Void
+  +removeProduct(productId: String): Void
+  +clear(): Void
+  +getTotal(): Double
+  +checkout(): Order
+}
+
+class Payment {
+  -id: String
+  -order: Order
+  -amount: Double
+  -method: PaymentMethod
+  -status: PaymentStatus
+  -processedAt: Date
+  +process(): Boolean
+  +refund(amount: Double): Boolean
+  +getStatus(): PaymentStatus
+}

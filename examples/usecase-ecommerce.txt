@@ -1,0 +1,43 @@
+// Use Case Diagram - E-commerce Platform
+actor Customer
+actor Seller
+actor Admin
+actor PaymentProcessor
+actor ShippingProvider
+
+Customer -> (Browse Products)
+Customer -> (Search Products)
+Customer -> (View Product Details)
+Customer -> (Add to Cart)
+Customer -> (Checkout)
+Customer -> (Make Payment)
+Customer -> (Track Order)
+Customer -> (Write Review)
+Customer -> (Return Product)
+Customer -> (Contact Support)
+
+Seller -> (Register as Seller)
+Seller -> (List Products)
+Seller -> (Manage Inventory)
+Seller -> (Process Orders)
+Seller -> (Update Product Information)
+Seller -> (View Sales Analytics)
+Seller -> (Respond to Reviews)
+Seller -> (Handle Returns)
+
+Admin -> (Manage Users)
+Admin -> (Moderate Content)
+Admin -> (Handle Disputes)
+Admin -> (Monitor Transactions)
+Admin -> (Generate Platform Reports)
+Admin -> (Configure System Settings)
+Admin -> (Manage Categories)
+
+PaymentProcessor -> (Process Payments)
+PaymentProcessor -> (Handle Refunds)
+PaymentProcessor -> (Verify Transactions)
+
+ShippingProvider -> (Calculate Shipping Costs)
+ShippingProvider -> (Schedule Pickups)
+ShippingProvider -> (Provide Tracking)
+ShippingProvider -> (Update Delivery Status)

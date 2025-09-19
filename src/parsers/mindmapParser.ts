@@ -1,6 +1,6 @@
 import type { ParserResult } from '../types/diagram';
 import { generateId } from '../utils/helpers';
-import { positionMindmapNodesRadial } from '../utils/layoutUtils';
+import { positionMindmapNodesTree } from '../utils/layoutUtils';
 
 export function parseMindmapDiagram(input: string): ParserResult {
   try {
@@ -14,17 +14,18 @@ export function parseMindmapDiagram(input: string): ParserResult {
       const level = getIndentLevel(rawLine);
       const text = rawLine.trim();
       
-      if (!text) continue;
+      // Skip empty lines and comments
+      if (!text || text.startsWith('//')) continue;
       
       const node = {
         id: generateId(),
         type: level === 0 ? 'root' : level === 1 ? 'branch' : 'leaf',
         label: text,
-        level,
+        level, // Store level for positioning algorithm
         x: 0, // Will be positioned later
         y: 0,
-        width: Math.max(100, text.length * 8),
-        height: 40,
+        width: Math.max(120, text.length * 7),
+        height: level === 0 ? 50 : level === 1 ? 45 : 35,
       };
       
       nodes.push(node);
@@ -49,7 +50,30 @@ export function parseMindmapDiagram(input: string): ParserResult {
     }
 
     // Position nodes in a radial layout using shared utility
-    const layoutNodes = positionMindmapNodesRadial(nodes, edges);
+    if (nodes.length === 0) {
+      return {
+        success: false,
+        error: 'No valid nodes found in mindmap input',
+      };
+    }
+
+    // Validate that all nodes have IDs
+    const nodesWithoutIds = nodes.filter(node => !node.id);
+    if (nodesWithoutIds.length > 0) {
+      return {
+        success: false,
+        error: `Found ${nodesWithoutIds.length} nodes without IDs`,
+      };
+    }
+
+    const layoutNodes = positionMindmapNodesTree(nodes, edges);
+
+    if (!layoutNodes || layoutNodes.length === 0) {
+      return {
+        success: false,
+        error: 'Layout positioning failed - no nodes positioned',
+      };
+    }
 
     return {
       success: true,

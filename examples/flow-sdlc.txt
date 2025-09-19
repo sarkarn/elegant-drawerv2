@@ -1,0 +1,32 @@
+// Advanced Flow Diagram - Software Development Lifecycle
+start -> planning: Begin project
+planning -> requirements: Define scope
+requirements -> design: Gather requirements
+design -> architecture: Create system design
+architecture -> development: Define architecture
+
+development -> codereview: Write code
+codereview -> testing: Code review passed
+codereview -> development: Code review failed
+
+testing -> unittests: Run unit tests
+unittests -> integrationtests: Unit tests passed
+unittests -> development: Unit tests failed
+
+integrationtests -> systemtests: Integration tests passed
+integrationtests -> development: Integration tests failed
+
+systemtests -> uat: System tests passed
+systemtests -> development: System tests failed
+
+uat -> deployment: User acceptance passed
+uat -> development: User acceptance failed
+
+deployment -> production: Deploy to production
+production -> monitoring: Monitor system
+monitoring -> maintenance: System stable
+monitoring -> bugfix: Issues detected
+
+bugfix -> development: Fix bugs
+maintenance -> endproject: Project complete
+endproject -> end

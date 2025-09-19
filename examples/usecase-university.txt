@@ -1,0 +1,41 @@
+// Advanced Use Case Diagram - University Management System
+actor Student
+actor Faculty
+actor Admin
+actor Registrar
+actor Librarian
+
+Student -> (Register for Course)
+Student -> (View Schedule)
+Student -> (Submit Assignment)
+Student -> (View Grades)
+Student -> (Pay Fees)
+Student -> (Access Library)
+Student -> (Download Course Materials)
+
+Faculty -> (Create Course)
+Faculty -> (Upload Course Materials)
+Faculty -> (Grade Assignments)
+Faculty -> (Take Attendance)
+Faculty -> (Communicate with Students)
+Faculty -> (Generate Reports)
+Faculty -> (Access Library)
+
+Admin -> (Manage User Accounts)
+Admin -> (Generate System Reports)
+Admin -> (Configure System Settings)
+Admin -> (Monitor System Performance)
+Admin -> (Backup Data)
+Admin -> (Manage Permissions)
+
+Registrar -> (Approve Course Registration)
+Registrar -> (Manage Academic Calendar)
+Registrar -> (Generate Transcripts)
+Registrar -> (Verify Student Records)
+Registrar -> (Process Graduation)
+
+Librarian -> (Manage Book Inventory)
+Librarian -> (Issue Books)
+Librarian -> (Collect Returns)
+Librarian -> (Manage Reservations)
+Librarian -> (Generate Library Reports)

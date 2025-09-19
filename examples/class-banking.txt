@@ -1,0 +1,109 @@
+// Class Diagram - Banking System with Interfaces
+class Account {
+  #accountNumber: String
+  #balance: Double
+  #accountHolder: Customer
+  #createdDate: Date
+  +getAccountNumber(): String
+  +getBalance(): Double
+  +deposit(amount: Double): Void
+  +withdraw(amount: Double): Boolean
+  +getAccountHolder(): Customer
+}
+
+class SavingsAccount extends Account {
+  -interestRate: Double
+  -minimumBalance: Double
+  +calculateInterest(): Double
+  +applyInterest(): Void
+  +getInterestRate(): Double
+}
+
+class CheckingAccount extends Account {
+  -overdraftLimit: Double
+  -transactionFee: Double
+  +getOverdraftLimit(): Double
+  +chargeTransactionFee(): Void
+  +hasOverdraftProtection(): Boolean
+}
+
+class Customer {
+  -customerId: String
+  -firstName: String
+  -lastName: String
+  -email: String
+  -phone: String
+  -address: String
+  -accounts: List
+  +getCustomerId(): String
+  +getFullName(): String
+  +addAccount(account: Account): Void
+  +getAccounts(): List
+  +updateContactInfo(email: String, phone: String): Void
+}
+
+class Bank {
+  -bankCode: String
+  -name: String
+  -headquarters: String
+  -customers: List
+  -accounts: List
+  +addCustomer(customer: Customer): Void
+  +createAccount(customer: Customer, type: String): Account
+  +findAccount(accountNumber: String): Account
+  +generateAccountNumber(): String
+}
+
+class Transaction {
+  -transactionId: String
+  -fromAccount: Account
+  -toAccount: Account
+  -amount: Double
+  -type: TransactionType
+  -timestamp: Date
+  -description: String
+  +getTransactionId(): String
+  +getAmount(): Double
+  +getType(): TransactionType
+  +getTimestamp(): Date
+  +process(): Boolean
+}
+
+class ATM {
+  -atmId: String
+  -location: String
+  -bank: Bank
+  -cashAvailable: Double
+  +authenticateCard(cardNumber: String, pin: String): Boolean
+  +dispenseCash(amount: Double): Boolean
+  +checkBalance(account: Account): Double
+  +printReceipt(transaction: Transaction): Void
+}
+
+class CreditCard {
+  -cardNumber: String
+  -customer: Customer
+  -creditLimit: Double
+  -currentBalance: Double
+  -expiryDate: Date
+  -securityCode: String
+  +getCardNumber(): String
+  +getCreditLimit(): Double
+  +getCurrentBalance(): Double
+  +makePayment(amount: Double): Boolean
+  +isValid(): Boolean
+}
+
+class Loan {
+  -loanId: String
+  -customer: Customer
+  -principal: Double
+  -interestRate: Double
+  -term: Integer
+  -monthlyPayment: Double
+  -remainingBalance: Double
+  +calculateMonthlyPayment(): Double
+  +makePayment(amount: Double): Void
+  +getRemainingBalance(): Double
+  +getNextPaymentDate(): Date
+}

@@ -1,0 +1,53 @@
+// Use Case Diagram - Hospital Management System
+actor Patient
+actor Doctor
+actor Nurse
+actor Receptionist
+actor Pharmacist
+actor Administrator
+actor LabTechnician
+
+Patient -> (Register)
+Patient -> (Book Appointment)
+Patient -> (View Medical Records)
+Patient -> (Make Payment)
+Patient -> (Request Prescription Refill)
+Patient -> (Provide Feedback)
+
+Doctor -> (View Patient Records)
+Doctor -> (Diagnose Patient)
+Doctor -> (Prescribe Medication)
+Doctor -> (Order Lab Tests)
+Doctor -> (Schedule Surgery)
+Doctor -> (Update Treatment Plan)
+Doctor -> (Generate Medical Reports)
+
+Nurse -> (Assist Doctor)
+Nurse -> (Administer Medication)
+Nurse -> (Monitor Vital Signs)
+Nurse -> (Update Patient Records)
+Nurse -> (Schedule Patient Activities)
+
+Receptionist -> (Schedule Appointments)
+Receptionist -> (Register Patients)
+Receptionist -> (Handle Inquiries)
+Receptionist -> (Process Payments)
+Receptionist -> (Manage Waiting List)
+
+Pharmacist -> (Dispense Medications)
+Pharmacist -> (Verify Prescriptions)
+Pharmacist -> (Manage Drug Inventory)
+Pharmacist -> (Counsel Patients)
+Pharmacist -> (Report Adverse Effects)
+
+Administrator -> (Manage Staff)
+Administrator -> (Generate Hospital Reports)
+Administrator -> (Manage Resources)
+Administrator -> (Handle Insurance Claims)
+Administrator -> (Monitor Quality Metrics)
+
+LabTechnician -> (Collect Samples)
+LabTechnician -> (Perform Tests)
+LabTechnician -> (Record Results)
+LabTechnician -> (Maintain Equipment)
+LabTechnician -> (Generate Lab Reports)

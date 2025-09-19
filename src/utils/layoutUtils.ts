@@ -1,3 +1,5 @@
+import * as dagre from 'dagre';
+
 // Shared layout utilities for consistent diagram positioning
 
 export interface LayoutNode {
@@ -18,7 +20,7 @@ export interface LayoutEdge {
  * Based on Mermaid/PlantUML principles
  */
 export function positionNodesHierarchically(
-  nodes: LayoutNode[], 
+  nodes: LayoutNode[],
   edges: LayoutEdge[],
   options: {
     nodeWidth?: number;
@@ -134,6 +136,10 @@ export function positionNodesHierarchically(
     layerNodes.forEach((node, nodeIndex) => {
       let x, y;
       
+      // Use actual node dimensions but with better spacing logic
+      const actualWidth = node.width || nodeWidth;
+      const actualHeight = node.height || nodeHeight;
+      
       if (layoutDirection === 'left-right') {
         // Left-to-right layout
         x = startX + layerIndex * horizontalSpacing;
@@ -141,10 +147,19 @@ export function positionNodesHierarchically(
           ? startY + 200  // Center single nodes
           : startY + (nodeIndex * verticalSpacing);
       } else {
-        // Top-down layout (default)
-        x = layerNodes.length === 1 
-          ? startX + 200  // Center single nodes
-          : startX + (nodeIndex * horizontalSpacing);
+        // Top-down layout (default) - use cumulative positioning for better spacing
+        if (layerNodes.length === 1) {
+          x = startX + 200;  // Center single nodes
+        } else {
+          // Calculate cumulative x position based on actual widths of previous nodes
+          let cumulativeX = startX;
+          for (let i = 0; i < nodeIndex; i++) {
+            const prevNode = layerNodes[i];
+            const prevWidth = prevNode.width || nodeWidth;
+            cumulativeX += prevWidth + 70; // Increased margin from 50px to 70px
+          }
+          x = cumulativeX;
+        }
         y = startY + layerIndex * verticalSpacing;
       }
       
@@ -152,8 +167,8 @@ export function positionNodesHierarchically(
         ...node,
         x,
         y,
-        width: nodeWidth,
-        height: nodeHeight,
+        width: actualWidth,  // Preserve calculated width
+        height: actualHeight, // Preserve calculated height
       });
     });
   });
@@ -187,75 +202,196 @@ export function positionSequenceNodes(nodes: LayoutNode[]): any[] {
 }
 
 /**
- * Radial layout for mind maps with viewport-aware positioning
+ * Advanced dual-sided, balanced tree layout for mind maps.
+ * The root is centered, and branches are split to the left and right.
  */
-export function positionMindmapNodesRadial(nodes: LayoutNode[], edges: LayoutEdge[]): any[] {
+export function positionMindmapNodesTree(nodes: LayoutNode[], edges: LayoutEdge[]): any[] {
   const positioned: any[] = [];
-  
-  // Use larger viewport for mind maps to ensure visibility
-  const centerX = 500;
+  if (nodes.length === 0) return positioned;
+
+  const centerX = 600;
   const centerY = 400;
-  const minRadius = 120;
-  const radiusGrowth = 80;
-  
-  // Find root node
-  const rootNode = nodes.find(node => node.type === 'root') || nodes[0];
-  if (!rootNode) return positioned;
-  
-  // Position root at center with larger size
-  positioned.push({
-    ...rootNode,
-    x: centerX - 75,
-    y: centerY - 25,
-    width: 150,
-    height: 50,
-  });
-  
-  // Build tree structure
+  const horizontalSpacing = 250;
+  const verticalSpacing = 60;
+
+  // 1. Find root and build children map
+  const rootNode = nodes.find(node => !edges.some(edge => edge.to === node.id)) || nodes[0];
   const childrenMap = new Map<string, LayoutNode[]>();
   edges.forEach(edge => {
-    if (!childrenMap.has(edge.from)) {
-      childrenMap.set(edge.from, []);
-    }
+    if (!childrenMap.has(edge.from)) childrenMap.set(edge.from, []);
     const child = nodes.find(n => n.id === edge.to);
-    if (child) {
-      childrenMap.get(edge.from)!.push(child);
-    }
+    if (child) childrenMap.get(edge.from)!.push(child);
   });
-  
-  // Position children in expanding circles with better spacing
-  const positionChildren = (parentId: string, parentX: number, parentY: number, level: number) => {
-    const children = childrenMap.get(parentId) || [];
+
+  // Sort children for stable layout
+  childrenMap.forEach(children => children.sort((a, b) => (a.label || '').localeCompare(b.label || '')));
+
+  // 2. Position Root Node
+  const rootWidth = Math.max(180, (rootNode.label?.length || 10) * 9);
+  positioned.push({
+    ...rootNode,
+    x: centerX - rootWidth / 2,
+    y: centerY - 30,
+    width: rootWidth,
+    height: 60,
+  });
+
+  // 3. Recursive function to calculate subtree heights
+  const heightCache = new Map<string, number>();
+  function getSubtreeHeight(nodeId: string): number {
+    if (heightCache.has(nodeId)) return heightCache.get(nodeId)!;
+
+    const children = childrenMap.get(nodeId) || [];
+    if (children.length === 0) return verticalSpacing;
+
+    const totalHeight = children.reduce((sum, child) => sum + getSubtreeHeight(child.id), 0);
+    heightCache.set(nodeId, totalHeight);
+    return totalHeight;
+  }
+
+  // 4. Recursive function to position nodes
+  function positionBranch(nodeId: string, parentX: number, parentY: number, direction: 'left' | 'right', level: number) {
+    const children = childrenMap.get(nodeId) || [];
     if (children.length === 0) return;
-    
-    const radius = minRadius + level * radiusGrowth;
-    const angleStep = (2 * Math.PI) / Math.max(children.length, 3);
-    const startAngle = level === 1 ? 0 : -Math.PI / 2; // First level spreads horizontally
-    
-    children.forEach((child, index) => {
-      const angle = startAngle + index * angleStep;
-      const x = parentX + radius * Math.cos(angle);
-      const y = parentY + radius * Math.sin(angle);
+
+    const totalSubtreeHeight = getSubtreeHeight(nodeId);
+    let currentY = parentY - totalSubtreeHeight / 2;
+
+    children.forEach(child => {
+      const childSubtreeHeight = getSubtreeHeight(child.id);
+      const nodeY = currentY + childSubtreeHeight / 2;
       
-      // Dynamic sizing based on text length and level
-      const textLength = child.label?.length || 10;
-      const width = Math.max(100, Math.min(200, textLength * 8));
-      const height = level === 1 ? 45 : 35;
-      
+      const nodeWidth = Math.max(140, Math.min(220, (child.label?.length || 10) * 8));
+      const nodeHeight = level > 1 ? 40 : 50;
+      const nodeX = direction === 'right'
+        ? parentX + horizontalSpacing
+        : parentX - horizontalSpacing - nodeWidth;
+
       positioned.push({
         ...child,
-        x: x - width / 2,
-        y: y - height / 2,
-        width,
-        height,
+        x: nodeX,
+        y: nodeY - nodeHeight / 2,
+        width: nodeWidth,
+        height: nodeHeight,
       });
-      
-      // Recursively position grandchildren
-      positionChildren(child.id, x, y, level + 1);
+
+      positionBranch(child.id, nodeX + nodeWidth / 2, nodeY, direction, level + 1);
+      currentY += childSubtreeHeight;
     });
+  }
+
+  // 5. Split root children into left and right branches
+  const rootChildren = childrenMap.get(rootNode.id) || [];
+  const rightBranchNodes = rootChildren.slice(0, Math.ceil(rootChildren.length / 2));
+  const leftBranchNodes = rootChildren.slice(Math.ceil(rootChildren.length / 2));
+
+  // Position Right Branch
+  const rightBranchHeight = rightBranchNodes.reduce((sum, child) => sum + getSubtreeHeight(child.id), 0);
+  let rightY = centerY - rightBranchHeight / 2;
+  rightBranchNodes.forEach(child => {
+    const childSubtreeHeight = getSubtreeHeight(child.id);
+    const nodeY = rightY + childSubtreeHeight / 2;
+    const nodeWidth = Math.max(150, Math.min(240, (child.label?.length || 10) * 8));
+    const nodeHeight = 50;
+
+    positioned.push({
+      ...child,
+      x: centerX + horizontalSpacing,
+      y: nodeY - nodeHeight / 2,
+      width: nodeWidth,
+      height: nodeHeight,
+    });
+    positionBranch(child.id, centerX + horizontalSpacing + nodeWidth / 2, nodeY, 'right', 2);
+    rightY += childSubtreeHeight;
+  });
+
+  // Position Left Branch
+  const leftBranchHeight = leftBranchNodes.reduce((sum, child) => sum + getSubtreeHeight(child.id), 0);
+  let leftY = centerY - leftBranchHeight / 2;
+  leftBranchNodes.forEach(child => {
+    const childSubtreeHeight = getSubtreeHeight(child.id);
+    const nodeY = leftY + childSubtreeHeight / 2;
+    const nodeWidth = Math.max(150, Math.min(240, (child.label?.length || 10) * 8));
+    const nodeHeight = 50;
+
+    positioned.push({
+      ...child,
+      x: centerX - horizontalSpacing - nodeWidth,
+      y: nodeY - nodeHeight / 2,
+      width: nodeWidth,
+      height: nodeHeight,
+    });
+    positionBranch(child.id, centerX - horizontalSpacing - nodeWidth / 2, nodeY, 'left', 2);
+    leftY += childSubtreeHeight;
+  });
+  
+  return positioned;
+}
+
+/**
+ * Use Dagre.js to layout the graph for flowcharts
+ */
+export function positionNodesWithDagre(nodes: LayoutNode[], edges: LayoutEdge[]): LayoutNode[] {
+  const g = new dagre.graphlib.Graph();
+  g.setGraph({
+    rankdir: 'TB', // Top to bottom layout
+    nodesep: 50,   // Horizontal separation between nodes
+    ranksep: 70,   // Vertical separation between levels
+  });
+  g.setDefaultEdgeLabel(() => ({}));
+
+  nodes.forEach(node => {
+    const width = node.width || Math.max(150, (node.label?.length || 0) * 9);
+    const height = node.height || 60;
+    g.setNode(node.id, { label: node.label, width, height });
+  });
+
+  edges.forEach(edge => {
+    g.setEdge(edge.from, edge.to);
+  });
+
+  dagre.layout(g);
+
+  return nodes.map(node => {
+    const { x, y, width, height } = g.node(node.id);
+    return {
+      ...node,
+      x: x - width / 2,
+      y: y - height / 2,
+      width,
+      height,
+    };
+  });
+}
+
+/**
+ * Improved grid-based layout for class diagrams
+ */
+export function positionClassNodesInGrid(nodes: LayoutNode[]): any[] {
+  const positioned: any[] = [];
+  const grid = {
+    cols: 3, // Max columns
+    colWidth: 350,
+    rowHeight: 450,
+    startX: 50,
+    startY: 50,
   };
-  
-  positionChildren(rootNode.id, centerX, centerY, 1);
-  
+
+  nodes.forEach((node, index) => {
+    const col = index % grid.cols;
+    const row = Math.floor(index / grid.cols);
+    
+    const x = grid.startX + col * grid.colWidth;
+    const y = grid.startY + row * grid.rowHeight;
+
+    positioned.push({
+      ...node,
+      x,
+      y,
+      width: node.width || 300,
+      height: node.height || 400,
+    });
+  });
+
   return positioned;
 }

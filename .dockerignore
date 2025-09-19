@@ -1,0 +1,25 @@
+# Railway Deployment - Elegant Drawer v2
+
+# Docker
+node_modules/
+dist/
+.env
+.env.local
+.env.production
+
+# Railway
+.railway/
+
+# Development
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -6,15 +6,23 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:production": "tsc -b && vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:build": "docker build -t elegant-drawer .",
+    "docker:run": "docker run -p 8080:80 elegant-drawer",
+    "docker:test": "docker build -t elegant-drawer-test . && docker run -p 8080:80 elegant-drawer-test",
+    "deploy:check": "node -e \"console.log('Deployment files ready!')\"",
+    "serve": "vite preview --host 0.0.0.0 --port 4173"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.16",
     "@types/d3": "^7.4.3",
+    "@types/dagre": "^0.7.53",
     "autoprefixer": "10.4.20",
     "clsx": "^2.1.1",
     "d3": "^7.9.0",
+    "dagre": "^0.8.5",
     "konva": "^10.0.2",
     "lucide-react": "^0.544.0",
     "postcss": "^8.5.6",

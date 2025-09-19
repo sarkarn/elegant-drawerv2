@@ -1,0 +1,37 @@
+// Advanced Sequence Diagram - Online Shopping Workflow
+Customer -> Website: Open shopping page
+Website -> Database: Query product catalog
+Database --> Website: Return product list
+Website --> Customer: Display products
+
+Customer -> Website: Add item to cart
+Website -> CartService: Add product to session
+CartService --> Website: Confirm addition
+Website --> Customer: Update cart display
+
+Customer -> Website: Proceed to checkout
+Website -> AuthService: Verify user login
+AuthService --> Website: User authenticated
+Website -> PaymentGateway: Initialize payment
+PaymentGateway --> Website: Payment form ready
+Website --> Customer: Show payment form
+
+Customer -> Website: Submit payment details
+Website -> PaymentGateway: Process payment
+PaymentGateway -> BankAPI: Validate card
+BankAPI --> PaymentGateway: Payment approved
+PaymentGateway --> Website: Payment successful
+
+Website -> OrderService: Create order
+OrderService -> Database: Save order details
+Database --> OrderService: Order saved
+OrderService -> InventoryService: Update stock
+InventoryService --> OrderService: Stock updated
+
+OrderService -> EmailService: Send confirmation
+EmailService --> Customer: Order confirmation email
+OrderService --> Website: Order created
+Website --> Customer: Display order summary
+
+Website -> ShippingService: Schedule delivery
+ShippingService --> Customer: Delivery notification
