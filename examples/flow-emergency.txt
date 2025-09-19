@@ -1,0 +1,41 @@
+// Flow Diagram - Emergency Response System
+start -> receivecall: Emergency call received
+receivecall -> assessment: Assess emergency type
+assessment -> medical: Medical emergency
+assessment -> fire: Fire emergency
+assessment -> police: Police emergency
+assessment -> other: Other emergency
+
+medical -> ambulancedispatch: Dispatch ambulance
+fire -> firedispatch: Dispatch fire truck
+police -> policedispatch: Dispatch police unit
+other -> appropriatedispatch: Dispatch appropriate unit
+
+ambulancedispatch -> paramedicsroute: Paramedics en route
+firedispatch -> firefightersroute: Fire fighters en route
+policedispatch -> officersroute: Police officers en route
+appropriatedispatch -> unitsroute: Units en route
+
+paramedicsroute -> arrivalscene: Arrive at scene
+firefightersroute -> arrivalscene: Arrive at scene
+officersroute -> arrivalscene: Arrive at scene
+unitsroute -> arrivalscene: Arrive at scene
+
+arrivalscene -> situationassess: Assess situation
+situationassess -> needbackup: Need additional support
+situationassess -> handleemergency: Handle emergency
+
+needbackup -> requestbackup: Request backup
+requestbackup -> backupdispatch: Backup dispatched
+backupdispatch -> handleemergency: Backup arrived
+
+handleemergency -> hospitaltransport: Transport to hospital
+handleemergency -> scenesecured: Scene secured
+handleemergency -> resolved: Emergency resolved
+
+hospitaltransport -> followup: Hospital treatment
+scenesecured -> followup: Scene investigation
+resolved -> followup: Case closed
+
+followup -> documentation: Document incident
+documentation -> end: Report filed

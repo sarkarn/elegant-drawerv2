@@ -111,12 +111,12 @@ export function parseClassDiagram(input: string): ParserResult {
       }
     }
 
-    // Apply hierarchical layout for better positioning
+    // Apply hierarchical layout for better positioning with updated spacing
     const layoutNodes = positionNodesHierarchically(nodes, edges, {
-      nodeWidth: 200,
-      nodeHeight: 150,
-      horizontalSpacing: 250,
-      verticalSpacing: 200,
+      nodeWidth: 250, // Default width for fallback
+      nodeHeight: 200, // Default height for fallback  
+      horizontalSpacing: 300, // Conservative spacing
+      verticalSpacing: 250, // Conservative spacing
       layoutDirection: 'top-down'
     });
 
@@ -141,14 +141,46 @@ export function parseClassDiagram(input: string): ParserResult {
 
 function finishCurrentClass(currentClass: Partial<ClassNode>, nodes: ClassNode[]) {
   if (currentClass.data) {
-    // Calculate height based on content
-    const attributeHeight = currentClass.data.attributes.length * 20;
-    const methodHeight = currentClass.data.methods.length * 20;
+    // Calculate height based on content with more accurate spacing
+    const titleHeight = 30; // Class name and separator line
+    const lineSpacing = 18; // Increased spacing between lines
+    const separatorHeight = 15; // Height for separator between attributes and methods
+    const padding = 30; // Bottom padding
+    
+    const attributeHeight = currentClass.data.attributes.length * lineSpacing;
+    const methodHeight = currentClass.data.methods.length * lineSpacing;
+    const needsSeparator = currentClass.data.attributes.length > 0 && currentClass.data.methods.length > 0;
+    
+    // More accurate height calculation
+    const calculatedHeight = titleHeight + 
+                            attributeHeight + 
+                            (needsSeparator ? separatorHeight : 0) + 
+                            methodHeight + 
+                            padding;
+    
     const minHeight = 80;
-    const height = Math.max(minHeight, 40 + attributeHeight + methodHeight + 20);
+    const height = Math.max(minHeight, calculatedHeight);
+
+    // Also adjust width based on content length
+    const maxAttributeLength = currentClass.data.attributes.length > 0 
+      ? Math.max(...currentClass.data.attributes.map(attr => 
+          `${attr.visibility === 'private' ? '-' : attr.visibility === 'protected' ? '#' : '+'} ${attr.name}: ${attr.type}`.length
+        ))
+      : 0;
+    
+    const maxMethodLength = currentClass.data.methods.length > 0
+      ? Math.max(...currentClass.data.methods.map(method => {
+          const params = method.parameters ? method.parameters.map(p => `${p.name}: ${p.type}`).join(', ') : '';
+          return `${method.visibility === 'private' ? '-' : method.visibility === 'protected' ? '#' : '+'} ${method.name}(${params}): ${method.returnType}`.length;
+        }))
+      : 0;
+    
+    const maxContentLength = Math.max(currentClass.data.className.length, maxAttributeLength, maxMethodLength);
+    const calculatedWidth = Math.max(200, Math.min(400, maxContentLength * 8 + 40)); // Dynamic width with limits
 
     nodes.push({
       ...currentClass,
+      width: calculatedWidth,
       height,
     } as ClassNode);
   }

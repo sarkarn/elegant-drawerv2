@@ -1,0 +1,73 @@
+// Test Class Diagram - Complex Class with Many Methods
+class DatabaseConnection {
+  -connectionString: String
+  -isConnected: Boolean
+  -timeout: Integer
+  -retryCount: Integer
+  -connectionPool: ConnectionPool
+  -logger: Logger
+  +connect(): Boolean
+  +disconnect(): Void
+  +executeQuery(sql: String): ResultSet
+  +executeUpdate(sql: String): Integer
+  +beginTransaction(): Transaction
+  +commitTransaction(): Void
+  +rollbackTransaction(): Void
+  +prepareStatement(sql: String): PreparedStatement
+  +createCallableStatement(sql: String): CallableStatement
+  +setAutoCommit(autoCommit: Boolean): Void
+  +getMetaData(): DatabaseMetaData
+  +isValid(timeout: Integer): Boolean
+  +setCatalog(catalog: String): Void
+  +getCatalog(): String
+  +setReadOnly(readOnly: Boolean): Void
+  +isReadOnly(): Boolean
+  +setTransactionIsolation(level: Integer): Void
+  +getTransactionIsolation(): Integer
+  +clearWarnings(): Void
+  +getWarnings(): SQLWarning
+  +close(): Void
+  +isClosed(): Boolean
+  +setHoldability(holdability: Integer): Void
+  +getHoldability(): Integer
+  +setSavepoint(): Savepoint
+  +setSavepoint(name: String): Savepoint
+  +rollback(savepoint: Savepoint): Void
+  +releaseSavepoint(savepoint: Savepoint): Void
+  +createStatement(): Statement
+  +createStatement(resultSetType: Integer, resultSetConcurrency: Integer): Statement
+  +createStatement(resultSetType: Integer, resultSetConcurrency: Integer, resultSetHoldability: Integer): Statement
+  +prepareCall(sql: String): CallableStatement
+  +prepareCall(sql: String, resultSetType: Integer, resultSetConcurrency: Integer): CallableStatement
+  +prepareCall(sql: String, resultSetType: Integer, resultSetConcurrency: Integer, resultSetHoldability: Integer): CallableStatement
+  +nativeSQL(sql: String): String
+  +getTypeMap(): Map
+  +setTypeMap(map: Map): Void
+  +createArrayOf(typeName: String, elements: Object[]): Array
+  +createStruct(typeName: String, attributes: Object[]): Struct
+  +getSchema(): String
+  +setSchema(schema: String): Void
+  +abort(executor: Executor): Void
+  +setNetworkTimeout(executor: Executor, milliseconds: Integer): Void
+  +getNetworkTimeout(): Integer
+  +createBlob(): Blob
+  +createClob(): Clob
+  +createNClob(): NClob
+  +createSQLXML(): SQLXML
+  +isWrapperFor(iface: Class): Boolean
+  +unwrap(iface: Class): Object
+}
+
+class User {
+  +id: Long
+  +username: String
+  +email: String
+  +login(): Boolean
+  +logout(): Void
+}
+
+class Admin extends User {
+  +permissions: List
+  +manageUsers(): Void
+  +manageSystem(): Void
+}

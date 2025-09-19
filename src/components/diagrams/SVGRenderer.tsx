@@ -68,12 +68,34 @@ export class SVGRenderer {
       const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       nodeGroup.setAttribute('class', 'class-node');
       
-      // Background rectangle
+      // Calculate actual content height for dynamic rectangle sizing
+      let actualHeight = 30; // Title and separator
+      const lineHeight = 18;
+      
+      if (node.data && node.data.attributes) {
+        actualHeight += node.data.attributes.length * lineHeight;
+      }
+      
+      if (node.data && node.data.attributes && node.data.attributes.length > 0 && 
+          node.data.methods && node.data.methods.length > 0) {
+        actualHeight += 15; // Separator line
+      }
+      
+      if (node.data && node.data.methods) {
+        actualHeight += node.data.methods.length * lineHeight;
+      }
+      
+      actualHeight += 20; // Bottom padding
+      
+      // Use the larger of calculated height or node height
+      const finalHeight = Math.max(node.height, actualHeight);
+      
+      // Background rectangle with dynamic height
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       rect.setAttribute('x', node.x.toString());
       rect.setAttribute('y', node.y.toString());
       rect.setAttribute('width', node.width.toString());
-      rect.setAttribute('height', node.height.toString());
+      rect.setAttribute('height', finalHeight.toString());
       rect.setAttribute('fill', nodeColor);
       rect.setAttribute('stroke', borderColor);
       rect.setAttribute('stroke-width', '2');
@@ -100,45 +122,53 @@ export class SVGRenderer {
       line.setAttribute('stroke', borderColor);
       nodeGroup.appendChild(line);
 
-      // Attributes and methods
-      let yOffset = 50;
+      // Attributes and methods with consistent spacing
+      let yOffset = 48; // Start after title and separator
+      
       if (node.data && node.data.attributes) {
         node.data.attributes.forEach((attr: any) => {
-          const attrText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          attrText.setAttribute('x', (node.x + 10).toString());
-          attrText.setAttribute('y', (node.y + yOffset).toString());
-          attrText.setAttribute('fill', textColor);
-          attrText.setAttribute('font-size', '12');
-          attrText.textContent = `${attr.visibility === 'private' ? '-' : attr.visibility === 'protected' ? '#' : '+'} ${attr.name}: ${attr.type}`;
+          const attrText = this.createWrappedText(
+            `${attr.visibility === 'private' ? '-' : attr.visibility === 'protected' ? '#' : '+'} ${attr.name}: ${attr.type}`,
+            node.x + 10,
+            node.y + yOffset,
+            node.width - 20,
+            textColor,
+            '12'
+          );
           nodeGroup.appendChild(attrText);
-          yOffset += 16;
+          yOffset += lineHeight;
         });
       }
 
       // Add separator line before methods if there are both attributes and methods
-      if (node.data && node.data.attributes && node.data.attributes.length > 0 && node.data.methods && node.data.methods.length > 0) {
+      if (node.data && node.data.attributes && node.data.attributes.length > 0 && 
+          node.data.methods && node.data.methods.length > 0) {
         const methodSeparator = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         methodSeparator.setAttribute('x1', (node.x + 10).toString());
-        methodSeparator.setAttribute('y1', (node.y + yOffset + 5).toString());
+        methodSeparator.setAttribute('y1', (node.y + yOffset + 2).toString());
         methodSeparator.setAttribute('x2', (node.x + node.width - 10).toString());
-        methodSeparator.setAttribute('y2', (node.y + yOffset + 5).toString());
+        methodSeparator.setAttribute('y2', (node.y + yOffset + 2).toString());
         methodSeparator.setAttribute('stroke', borderColor);
         nodeGroup.appendChild(methodSeparator);
         yOffset += 15;
       }
 
-      // Render methods
+      // Render methods with text wrapping
       if (node.data && node.data.methods) {
         node.data.methods.forEach((method: any) => {
-          const methodText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          methodText.setAttribute('x', (node.x + 10).toString());
-          methodText.setAttribute('y', (node.y + yOffset).toString());
-          methodText.setAttribute('fill', textColor);
-          methodText.setAttribute('font-size', '12');
           const params = method.parameters ? method.parameters.map((p: any) => `${p.name}: ${p.type}`).join(', ') : '';
-          methodText.textContent = `${method.visibility === 'private' ? '-' : method.visibility === 'protected' ? '#' : '+'} ${method.name}(${params}): ${method.returnType}`;
+          const methodSignature = `${method.visibility === 'private' ? '-' : method.visibility === 'protected' ? '#' : '+'} ${method.name}(${params}): ${method.returnType}`;
+          
+          const methodText = this.createWrappedText(
+            methodSignature,
+            node.x + 10,
+            node.y + yOffset,
+            node.width - 20,
+            textColor,
+            '12'
+          );
           nodeGroup.appendChild(methodText);
-          yOffset += 16;
+          yOffset += lineHeight;
         });
       }
 
@@ -149,13 +179,48 @@ export class SVGRenderer {
     this.renderEdges(group, data.nodes, data.edges, config, 'direct');
   }
 
+  // Helper method to create wrapped text for long content
+  private static createWrappedText(
+    text: string, 
+    x: number, 
+    y: number, 
+    maxWidth: number, 
+    fill: string, 
+    fontSize: string
+  ): SVGTextElement {
+    const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textElement.setAttribute('x', x.toString());
+    textElement.setAttribute('y', y.toString());
+    textElement.setAttribute('fill', fill);
+    textElement.setAttribute('font-size', fontSize);
+    textElement.setAttribute('font-family', 'monospace'); // Use monospace for better alignment
+    
+    // Estimate character width (approximation for monospace font)
+    const charWidth = parseInt(fontSize) * 0.6;
+    const maxChars = Math.floor(maxWidth / charWidth);
+    
+    if (text.length <= maxChars) {
+      // Text fits on one line
+      textElement.textContent = text;
+    } else {
+      // Text needs to be truncated with ellipsis
+      const truncatedText = text.substring(0, maxChars - 3) + '...';
+      textElement.textContent = truncatedText;
+      
+      // Add title attribute for full text on hover
+      textElement.setAttribute('title', text);
+    }
+    
+    return textElement;
+  }
+
   private static renderSequenceDiagram(group: SVGElement, data: DiagramData, config: DiagramConfig) {
     const actorColor = config.theme === 'dark' ? '#374151' : '#f3f4f6';
     const textColor = config.theme === 'dark' ? '#e5e7eb' : '#111827';
     const lifelineColor = config.theme === 'dark' ? '#6b7280' : '#9ca3af';
 
     // Calculate diagram height based on number of messages
-    const baseY = 120;
+    const baseY = 160; // Increased from 150 to 160 to give optimal space below actor boxes
     const stepY = 60;
     const messageCount = data.edges.length;
     const diagramHeight = Math.max(600, baseY + messageCount * stepY + 100);

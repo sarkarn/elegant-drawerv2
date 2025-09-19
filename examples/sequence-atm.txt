@@ -1,0 +1,39 @@
+// Sequence Diagram - Bank ATM Transaction
+Customer -> ATM: Insert card
+ATM -> CardReader: Read card data
+CardReader --> ATM: Card data retrieved
+ATM --> Customer: Request PIN
+
+Customer -> ATM: Enter PIN
+ATM -> Bank: Validate card and PIN
+Bank -> Database: Check account status
+Database --> Bank: Account active
+Bank --> ATM: Authentication successful
+ATM --> Customer: Show main menu
+
+Customer -> ATM: Select withdrawal
+ATM --> Customer: Enter amount
+Customer -> ATM: Input amount
+ATM -> Bank: Check account balance
+Bank -> Database: Query balance
+Database --> Bank: Return balance
+Bank --> ATM: Balance sufficient
+
+ATM -> Bank: Request withdrawal authorization
+Bank -> Database: Update balance
+Database --> Bank: Balance updated
+Bank -> AuditService: Log transaction
+AuditService --> Bank: Transaction logged
+Bank --> ATM: Authorization approved
+
+ATM -> CashDispenser: Dispense cash
+CashDispenser --> ATM: Cash dispensed
+ATM -> PrinterService: Print receipt
+PrinterService --> ATM: Receipt printed
+ATM --> Customer: Transaction complete
+
+ATM -> Bank: Send transaction confirmation
+Bank -> NotificationService: Send SMS alert
+NotificationService --> Customer: SMS notification
+Bank --> ATM: Confirmation received
+ATM --> Customer: Return card

@@ -1,0 +1,31 @@
+// Flow Diagram - Order Processing System
+start -> receiveorder: New order received
+receiveorder -> validateorder: Validate order data
+validateorder -> checkstock: Order data valid
+validateorder -> rejectorder: Order data invalid
+
+checkstock -> reservestock: Stock available
+checkstock -> backorder: Stock unavailable
+
+reservestock -> processpayment: Stock reserved
+processpayment -> fulfillorder: Payment successful
+processpayment -> cancelorder: Payment failed
+
+backorder -> notifycustomer: Create backorder
+notifycustomer -> waitstock: Customer notified
+waitstock -> checkstock: Stock replenished
+
+fulfillorder -> pickitems: Prepare order
+pickitems -> packorder: Items picked
+packorder -> generatelabel: Order packed
+generatelabel -> ship: Shipping label created
+
+ship -> trackingnotification: Order shipped
+trackingnotification -> delivered: Customer notified
+delivered -> end: Order complete
+
+rejectorder -> notifyrejection: Reject order
+notifyrejection -> end: Customer notified
+
+cancelorder -> refundprocess: Cancel order
+refundprocess -> end: Refund processed

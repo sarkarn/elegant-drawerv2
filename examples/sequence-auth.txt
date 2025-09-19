@@ -1,0 +1,41 @@
+// Sequence Diagram - User Registration and Login System
+User -> RegisterPage: Access registration
+RegisterPage -> ValidationService: Check email format
+ValidationService --> RegisterPage: Email valid
+RegisterPage -> Database: Check email exists
+Database --> RegisterPage: Email available
+
+RegisterPage -> PasswordService: Hash password
+PasswordService --> RegisterPage: Password hashed
+RegisterPage -> Database: Create user account
+Database --> RegisterPage: Account created
+RegisterPage -> EmailService: Send verification email
+EmailService --> User: Verification email sent
+RegisterPage --> User: Registration successful
+
+User -> EmailClient: Click verification link
+EmailClient -> VerificationService: Verify token
+VerificationService -> Database: Mark email verified
+Database --> VerificationService: Email verified
+VerificationService --> EmailClient: Verification successful
+EmailClient --> User: Account activated
+
+User -> LoginPage: Enter credentials
+LoginPage -> AuthService: Authenticate user
+AuthService -> Database: Verify credentials
+Database --> AuthService: Credentials valid
+AuthService -> TokenService: Generate JWT token
+TokenService --> AuthService: Token created
+AuthService --> LoginPage: Login successful
+LoginPage -> SessionService: Create user session
+SessionService --> LoginPage: Session created
+LoginPage --> User: Redirect to dashboard
+
+User -> Dashboard: Access protected resource
+Dashboard -> AuthMiddleware: Validate token
+AuthMiddleware -> TokenService: Verify JWT
+TokenService --> AuthMiddleware: Token valid
+AuthMiddleware --> Dashboard: Access granted
+Dashboard -> Database: Fetch user data
+Database --> Dashboard: Return user data
+Dashboard --> User: Display personalized content

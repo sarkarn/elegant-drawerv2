@@ -134,6 +134,10 @@ export function positionNodesHierarchically(
     layerNodes.forEach((node, nodeIndex) => {
       let x, y;
       
+      // Use actual node dimensions but with better spacing logic
+      const actualWidth = node.width || nodeWidth;
+      const actualHeight = node.height || nodeHeight;
+      
       if (layoutDirection === 'left-right') {
         // Left-to-right layout
         x = startX + layerIndex * horizontalSpacing;
@@ -141,10 +145,19 @@ export function positionNodesHierarchically(
           ? startY + 200  // Center single nodes
           : startY + (nodeIndex * verticalSpacing);
       } else {
-        // Top-down layout (default)
-        x = layerNodes.length === 1 
-          ? startX + 200  // Center single nodes
-          : startX + (nodeIndex * horizontalSpacing);
+        // Top-down layout (default) - use cumulative positioning for better spacing
+        if (layerNodes.length === 1) {
+          x = startX + 200;  // Center single nodes
+        } else {
+          // Calculate cumulative x position based on actual widths of previous nodes
+          let cumulativeX = startX;
+          for (let i = 0; i < nodeIndex; i++) {
+            const prevNode = layerNodes[i];
+            const prevWidth = prevNode.width || nodeWidth;
+            cumulativeX += prevWidth + 70; // Increased margin from 50px to 70px
+          }
+          x = cumulativeX;
+        }
         y = startY + layerIndex * verticalSpacing;
       }
       
@@ -152,8 +165,8 @@ export function positionNodesHierarchically(
         ...node,
         x,
         y,
-        width: nodeWidth,
-        height: nodeHeight,
+        width: actualWidth,  // Preserve calculated width
+        height: actualHeight, // Preserve calculated height
       });
     });
   });

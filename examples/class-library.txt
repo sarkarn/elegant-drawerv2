@@ -1,0 +1,94 @@
+// Class Diagram - Library Management System
+class Book {
+  -isbn: String
+  -title: String
+  -author: String
+  -publisher: String
+  -publicationYear: Integer
+  -availableCopies: Integer
+  -totalCopies: Integer
+  +getIsbn(): String
+  +getTitle(): String
+  +getAuthor(): String
+  +isAvailable(): Boolean
+  +borrowBook(): Boolean
+  +returnBook(): Void
+}
+
+class Member {
+  -memberId: String
+  -name: String
+  -email: String
+  -phone: String
+  -membershipDate: Date
+  -maxBooksAllowed: Integer
+  +getMemberId(): String
+  +getName(): String
+  +canBorrowBook(): Boolean
+  +getBorrowedBooks(): List
+}
+
+class Student extends Member {
+  -studentId: String
+  -course: String
+  -year: Integer
+  +getStudentId(): String
+  +getCourse(): String
+  +getYear(): Integer
+}
+
+class Faculty extends Member {
+  -employeeId: String
+  -department: String
+  -designation: String
+  +getEmployeeId(): String
+  +getDepartment(): String
+  +getDesignation(): String
+}
+
+class Librarian {
+  -employeeId: String
+  -name: String
+  -shift: String
+  +issueBook(member: Member, book: Book): Transaction
+  +returnBook(transaction: Transaction): Void
+  +addBook(book: Book): Void
+  +removeBook(isbn: String): Void
+  +searchBook(criteria: String): List
+}
+
+class Transaction {
+  -transactionId: String
+  -member: Member
+  -book: Book
+  -issueDate: Date
+  -dueDate: Date
+  -returnDate: Date
+  -fine: Double
+  +getTransactionId(): String
+  +calculateFine(): Double
+  +isOverdue(): Boolean
+  +markReturned(): Void
+}
+
+class Reservation {
+  -reservationId: String
+  -member: Member
+  -book: Book
+  -reservationDate: Date
+  -status: ReservationStatus
+  +getReservationId(): String
+  +cancel(): Void
+  +fulfill(): Transaction
+}
+
+class Fine {
+  -fineId: String
+  -transaction: Transaction
+  -amount: Double
+  -reason: String
+  -isPaid: Boolean
+  +calculateAmount(): Double
+  +payFine(): Void
+  +getFineDetails(): String
+}
