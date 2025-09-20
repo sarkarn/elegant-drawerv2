@@ -66,6 +66,7 @@ export const useDiagramStore = create<DiagramState>()(
     setDiagramType: (type: DiagramType) => {
       set((state) => ({
         config: { ...state.config, type },
+        currentDiagram: null, // Clear the previous diagram
         error: null,
       }));
     },

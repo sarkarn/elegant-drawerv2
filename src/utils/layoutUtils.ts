@@ -365,32 +365,47 @@ export function positionNodesWithDagre(nodes: LayoutNode[], edges: LayoutEdge[])
 }
 
 /**
- * Improved grid-based layout for class diagrams
+ * A dynamic grid layout for class diagrams that prevents overlaps.
  */
 export function positionClassNodesInGrid(nodes: LayoutNode[]): any[] {
   const positioned: any[] = [];
-  const grid = {
-    cols: 3, // Max columns
-    colWidth: 350,
-    rowHeight: 450,
-    startX: 50,
-    startY: 50,
-  };
+  if (nodes.length === 0) return positioned;
+
+  const cols = 3; // Max number of columns
+  const horizontalMargin = 80;
+  const verticalMargin = 80;
+  let currentX = 50;
+  let currentY = 50;
+  let maxRowHeight = 0;
 
   nodes.forEach((node, index) => {
-    const col = index % grid.cols;
-    const row = Math.floor(index / grid.cols);
-    
-    const x = grid.startX + col * grid.colWidth;
-    const y = grid.startY + row * grid.rowHeight;
+    const col = index % cols;
+
+    if (col === 0 && index > 0) {
+      // Start a new row
+      currentX = 50;
+      currentY += maxRowHeight + verticalMargin;
+      maxRowHeight = 0;
+    }
+
+    const nodeWidth = node.width || 300;
+    const nodeHeight = node.height || 400;
 
     positioned.push({
       ...node,
-      x,
-      y,
-      width: node.width || 300,
-      height: node.height || 400,
+      x: currentX,
+      y: currentY,
+      width: nodeWidth,
+      height: nodeHeight,
     });
+
+    // Update currentX for the next node in the row
+    currentX += nodeWidth + horizontalMargin;
+
+    // Update the maximum height for the current row
+    if (nodeHeight > maxRowHeight) {
+      maxRowHeight = nodeHeight;
+    }
   });
 
   return positioned;
