@@ -12,19 +12,22 @@ const diagramTypes: Array<{ value: DiagramType; label: string }> = [
 ];
 
 export const ControlBar: React.FC = () => {
-  const { config, setDiagramType, importDiagram, updateConfig, loadExample, getAvailableExamples } = useDiagramStore();
+  const store = useDiagramStore();
+  const { config, setDiagramType, importDiagram, updateConfig } = store;
   const [showExamples, setShowExamples] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
-  // Try to get examples with error handling
-  let examples: any[] = [];
-  try {
-    examples = getAvailableExamples();
-  } catch (error) {
-    console.error('Error getting examples:', error);
-  }
 
-  console.log('ControlBar rendered, examples:', examples.length, 'for type:', config.type);
+  // Simple check for examples functionality
+  const hasExampleFunctions = 'loadExample' in store && 'getAvailableExamples' in store;
+  
+  let examples: any[] = [];
+  if (hasExampleFunctions) {
+    try {
+      examples = (store as any).getAvailableExamples();
+    } catch (error) {
+      console.error('Error getting examples:', error);
+    }
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -53,8 +56,10 @@ export const ControlBar: React.FC = () => {
   };
 
   const handleExampleLoad = (exampleName: string) => {
-    loadExample(exampleName);
-    setShowExamples(false);
+    if (hasExampleFunctions) {
+      (store as any).loadExample(exampleName);
+      setShowExamples(false);
+    }
   };
 
   const togglePagination = () => {
@@ -108,42 +113,44 @@ export const ControlBar: React.FC = () => {
       {/* Right Side - Examples and File Load */}
       <div className="flex items-center space-x-4">
         {/* Examples Dropdown */}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setShowExamples(!showExamples)}
-            className="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <BookOpen className="w-4 h-4 mr-2" />
-            Load Example
-            <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${showExamples ? 'rotate-180' : ''}`} />
-          </button>
-          
-          {showExamples && (
-            <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
-              <div className="py-1 max-h-64 overflow-y-auto">
-                {examples.map((example) => (
-                  <button
-                    key={example.name}
-                    onClick={() => handleExampleLoad(example.name)}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700"
-                  >
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {example.name}
+        {hasExampleFunctions && (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setShowExamples(!showExamples)}
+              className="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              Load Example
+              <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${showExamples ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {showExamples && (
+              <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
+                <div className="py-1 max-h-64 overflow-y-auto">
+                  {examples.map((example) => (
+                    <button
+                      key={example.name}
+                      onClick={() => handleExampleLoad(example.name)}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700"
+                    >
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {example.name}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {example.description}
+                      </div>
+                    </button>
+                  ))}
+                  {examples.length === 0 && (
+                    <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                      No examples available for {config.type} diagrams
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {example.description}
-                    </div>
-                  </button>
-                ))}
-                {examples.length === 0 && (
-                  <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
-                    No examples available for {config.type} diagrams
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* File Load */}
         <div className="flex items-center space-x-2">
