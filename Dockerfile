@@ -20,27 +20,23 @@ RUN npm run build
 FROM nginx:alpine
 
 # Install curl for health checks
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl gettext
 
 # Copy built files to nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx configuration template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Create a startup script to handle Railway's PORT
-RUN echo '#!/bin/sh' > /start.sh && \
-    echo 'PORT=${PORT:-80}' >> /start.sh && \
-    echo 'sed -i "s/listen 80;/listen $PORT;/g" /etc/nginx/conf.d/default.conf' >> /start.sh && \
-    echo 'nginx -g "daemon off;"' >> /start.sh && \
-    chmod +x /start.sh
+# Set default port
+ENV PORT=80
 
-# Expose the port (Railway will override this)
+# Expose the port
 EXPOSE $PORT
 
-# Health check using the correct port
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:${PORT:-80}/health || exit 1
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:$PORT/health || exit 1
 
-# Start nginx with port configuration
-CMD ["/start.sh"]
+# Start nginx (nginx:alpine with templates support will substitute $PORT automatically)
+CMD ["nginx", "-g", "daemon off;"]
