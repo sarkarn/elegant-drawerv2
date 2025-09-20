@@ -226,7 +226,7 @@ function paginateUsecaseDiagram(
   edges: any[],
   maxWidth: number,
   maxHeight: number,
-  overlapMargin: number
+  _overlapMargin: number
 ): PageInfo[] {
   const actors = nodes.filter(node => node.type === 'actor');
   const usecases = nodes.filter(node => node.type === 'usecase');
