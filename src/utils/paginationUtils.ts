@@ -32,8 +32,8 @@ export function paginateDiagram(
     maxHeight = 900,
     overlapMargin = 100,
     preferredBreakPoints = 'layers',
-    showPageNumbers = true,
-    showContinuationIndicators = true
+    // showPageNumbers = true,
+    // showContinuationIndicators = true
   } = config;
 
   // Calculate overall diagram bounds
@@ -108,7 +108,7 @@ function paginateClassDiagram(
   edges: any[],
   maxWidth: number,
   maxHeight: number,
-  overlapMargin: number
+  _overlapMargin: number
 ): PageInfo[] {
   // Group nodes into layers/clusters based on inheritance and relationships
   const clusters = groupClassesByClusters(nodes, edges);
@@ -160,7 +160,7 @@ function paginateFlowDiagram(
   edges: any[],
   maxWidth: number,
   maxHeight: number,
-  overlapMargin: number,
+  _overlapMargin: number,
   preferredBreakPoints: string
 ): PageInfo[] {
   if (preferredBreakPoints === 'layers') {
@@ -176,9 +176,9 @@ function paginateFlowDiagram(
 function paginateSequenceDiagram(
   nodes: any[],
   edges: any[],
-  maxWidth: number,
+  _maxWidth: number,
   maxHeight: number,
-  overlapMargin: number
+  _overlapMargin: number
 ): PageInfo[] {
   // For sequence diagrams, split by message count rather than spatial bounds
   const messagesPerPage = Math.floor((maxHeight - 200) / 60); // Assuming 60px per message
@@ -207,7 +207,7 @@ function paginateMindmapDiagram(
   edges: any[],
   maxWidth: number,
   maxHeight: number,
-  overlapMargin: number
+  _overlapMargin: number
 ): PageInfo[] {
   // Find root node
   const rootNode = nodes.find(node => node.type === 'root') || nodes[0];
@@ -245,7 +245,7 @@ function paginateGenericDiagram(
   edges: any[],
   maxWidth: number,
   maxHeight: number,
-  overlapMargin: number
+  _overlapMargin: number
 ): PageInfo[] {
   return paginateByGrid(nodes, edges, maxWidth, maxHeight, 'Diagram');
 }
@@ -355,7 +355,7 @@ function paginateByGrid(nodes: any[], edges: any[], maxWidth: number, maxHeight:
   return pages;
 }
 
-function paginateByLevels(levels: any[][], edges: any[], maxWidth: number, maxHeight: number, title: string): PageInfo[] {
+function paginateByLevels(levels: any[][], edges: any[], _maxWidth: number, maxHeight: number, title: string): PageInfo[] {
   const pages: PageInfo[] = [];
   let currentPage: any[] = [];
   let currentHeight = 0;
@@ -420,12 +420,12 @@ function groupNodesByLevel(nodes: any[], edges: any[], rootId: string): any[][] 
   return levels;
 }
 
-function groupUsecasesByActors(actors: any[], usecases: any[], edges: any[]): any[][] {
+function groupUsecasesByActors(_actors: any[], usecases: any[], _edges: any[]): any[][] {
   // Implementation for grouping use cases by actors
   return [usecases]; // Simplified for now
 }
 
-function paginateActorGroups(groups: any[][], edges: any[], maxWidth: number, maxHeight: number, title: string): PageInfo[] {
+function paginateActorGroups(groups: any[][], edges: any[], _maxWidth: number, _maxHeight: number, title: string): PageInfo[] {
   // Implementation for paginating actor groups
   return groups.map((group, index) => createPageInfo(group, edges, index + 1, groups.length, title));
 }

@@ -45,10 +45,20 @@ export function parseFlowDiagram(input: string): ParserResult {
     const nodeArray = Array.from(nodeMap.values());
     const layeredNodes = positionNodesWithDagre(nodeArray, edges);
 
+    // Convert LayoutNodes to DiagramNodes by ensuring required properties
+    const diagramNodes = layeredNodes.map(node => ({
+      ...node,
+      x: node.x || 0,
+      y: node.y || 0,
+      width: node.width || 120,
+      height: node.height || 60,
+      type: node.type || 'process',
+    }));
+
     return {
       success: true,
       data: {
-        nodes: layeredNodes,
+        nodes: diagramNodes,
         edges,
         metadata: { title: 'Flow Diagram', created: new Date() },
       },
