@@ -20,20 +20,23 @@ RUN npm run build
 FROM nginx:alpine
 
 # Install curl for health checks
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl gettext
 
 # Copy built files to nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx configuration template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Expose port 80
-EXPOSE 80
+# Set default port
+ENV PORT=80
 
-# Health check using the /health endpoint
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost/health || exit 1
+# Expose the port
+EXPOSE $PORT
 
-# Start nginx
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:$PORT/health || exit 1
+
+# Start nginx (nginx:alpine with templates support will substitute $PORT automatically)
 CMD ["nginx", "-g", "daemon off;"]
