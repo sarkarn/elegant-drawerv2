@@ -135,70 +135,49 @@ NotificationService -> Customer: orderConfirmationEmail()`
     {
       name: "Library Management System",
       description: "Use cases for a digital library system",
-      content: `User: Student
-User: Librarian
-User: Administrator
+      content: `actor Student
+actor Librarian
+actor Administrator
 
-UseCase: Search Books
-UseCase: Borrow Book
-UseCase: Return Book
-UseCase: Renew Book
-UseCase: Reserve Book
-UseCase: Manage Inventory
-UseCase: Generate Reports
-UseCase: Manage Users
-UseCase: Pay Fines
+Student -> (Search Books)
+Student -> (Borrow Book)
+Student -> (Return Book)
+Student -> (Renew Book)
+Student -> (Reserve Book)
+Student -> (Pay Fines)
 
-Student -> Search Books
-Student -> Borrow Book
-Student -> Return Book
-Student -> Renew Book
-Student -> Reserve Book
-Student -> Pay Fines
+Librarian -> (Search Books)
+Librarian -> (Manage Inventory)
+Librarian -> (Generate Reports)
+Librarian -> (Help Students)
 
-Librarian -> Search Books
-Librarian -> Manage Inventory
-Librarian -> Generate Reports
-Librarian -> Help Students
-
-Administrator -> Manage Users
-Administrator -> Generate Reports
-Administrator -> System Configuration`
+Administrator -> (Manage Users)
+Administrator -> (Generate Reports)
+Administrator -> (System Configuration)`
     },
     {
       name: "Online Banking System",
       description: "Banking application use cases for different user roles",
-      content: `User: Customer
-User: Bank Teller
-User: Manager
+      content: `actor Customer
+actor BankTeller
+actor Manager
 
-UseCase: View Account Balance
-UseCase: Transfer Money
-UseCase: Pay Bills
-UseCase: Apply for Loan
-UseCase: Deposit Money
-UseCase: Withdraw Money
-UseCase: Open Account
-UseCase: Close Account
-UseCase: Generate Statements
-UseCase: Approve Loans
-UseCase: Manage Customer Accounts
+Customer -> (View Account Balance)
+Customer -> (Transfer Money)
+Customer -> (Pay Bills)
+Customer -> (Apply for Loan)
+Customer -> (Generate Statements)
 
-Customer -> View Account Balance
-Customer -> Transfer Money
-Customer -> Pay Bills
-Customer -> Apply for Loan
-Customer -> Generate Statements
+BankTeller -> (Deposit Money)
+BankTeller -> (Withdraw Money)
+BankTeller -> (Open Account)
+BankTeller -> (Close Account)
+BankTeller -> (Manage Customer Accounts)
 
-Bank Teller -> Deposit Money
-Bank Teller -> Withdraw Money
-Bank Teller -> Open Account
-Bank Teller -> Close Account
-Bank Teller -> Manage Customer Accounts
-
-Manager -> Approve Loans
-Manager -> Manage Customer Accounts
-Manager -> Generate Reports`
+Manager -> (Approve Loans)
+Manager -> (Manage Customer Accounts)
+Manager -> (Generate Reports)
+Manager -> (View Analytics)`
     }
   ],
 
@@ -353,77 +332,40 @@ Manager -> Generate Reports`
 
   flow: [
     {
-      name: "Customer Support Workflow",
-      description: "Process flow for handling customer support tickets",
-      content: `Start -> Ticket Received
-Ticket Received -> Categorize Issue
-Categorize Issue -> Technical Issue?
-Technical Issue? -> [Yes] Assign to Tech Team
-Technical Issue? -> [No] Assign to Support Team
-Assign to Tech Team -> Technical Analysis
-Assign to Support Team -> Support Analysis
-Technical Analysis -> Complex Issue?
-Support Analysis -> Escalation Needed?
-Complex Issue? -> [Yes] Escalate to Senior Tech
-Complex Issue? -> [No] Implement Solution
-Escalation Needed? -> [Yes] Escalate to Manager
-Escalation Needed? -> [No] Provide Solution
-Escalate to Senior Tech -> Senior Technical Review
-Escalate to Manager -> Manager Review
-Senior Technical Review -> Implement Solution
-Manager Review -> Provide Solution
-Implement Solution -> Test Solution
-Provide Solution -> Customer Satisfied?
-Test Solution -> Solution Works?
-Solution Works? -> [Yes] Deploy to Production
-Solution Works? -> [No] Revise Solution
-Deploy to Production -> Customer Satisfied?
-Customer Satisfied? -> [Yes] Close Ticket
-Customer Satisfied? -> [No] Further Investigation
-Revise Solution -> Implement Solution
-Further Investigation -> Technical Analysis
-Close Ticket -> End`
+      name: "User Login Process",
+      description: "Simple user authentication flowchart",
+      content: `start -> input_credentials: Start Login
+input_credentials -> validate: Enter Username/Password
+validate -> check_db: Validate Credentials
+check_db -> valid?: Check Database
+valid? -> success: [Yes] Valid Credentials
+valid? -> retry: [No] Invalid Credentials
+success -> dashboard: Login Successful
+retry -> attempts?: Check Attempts
+attempts? -> locked: [3+] Account Locked
+attempts? -> input_credentials: [<3] Try Again
+locked -> contact_admin: Contact Administrator
+dashboard -> end: Access Granted
+contact_admin -> end: Process Complete`
     },
     {
-      name: "Software Deployment Pipeline",
-      description: "CI/CD pipeline for software deployment",
-      content: `Start -> Code Commit
-Code Commit -> Trigger CI Pipeline
-Trigger CI Pipeline -> Run Unit Tests
-Run Unit Tests -> Tests Passed?
-Tests Passed? -> [No] Notify Developer
-Tests Passed? -> [Yes] Build Application
-Notify Developer -> Fix Issues
-Fix Issues -> Code Commit
-Build Application -> Build Successful?
-Build Successful? -> [No] Build Failed
-Build Successful? -> [Yes] Run Integration Tests
-Build Failed -> Notify Developer
-Run Integration Tests -> Integration Tests Passed?
-Integration Tests Passed? -> [No] Investigate Failures
-Integration Tests Passed? -> [Yes] Security Scan
-Investigate Failures -> Fix Issues
-Security Scan -> Security Issues Found?
-Security Issues Found? -> [Yes] Address Security Issues
-Security Issues Found? -> [No] Deploy to Staging
-Address Security Issues -> Security Scan
-Deploy to Staging -> Staging Tests
-Staging Tests -> Staging Tests Passed?
-Staging Tests Passed? -> [No] Debug Staging Issues
-Staging Tests Passed? -> [Yes] Manual Approval Required?
-Debug Staging Issues -> Fix Issues
-Manual Approval Required? -> [Yes] Request Approval
-Manual Approval Required? -> [No] Deploy to Production
-Request Approval -> Approval Granted?
-Approval Granted? -> [No] End
-Approval Granted? -> [Yes] Deploy to Production
-Deploy to Production -> Production Health Check
-Production Health Check -> Healthy?
-Healthy? -> [No] Rollback
-Healthy? -> [Yes] Notify Success
-Rollback -> Previous Version
-Previous Version -> End
-Notify Success -> End`
+      name: "Order Processing Workflow",
+      description: "E-commerce order processing flowchart",
+      content: `start -> receive_order: New Order Received
+receive_order -> check_inventory: Check Product Availability
+check_inventory -> in_stock?: Items Available?
+in_stock? -> process_payment: [Yes] Process Payment
+in_stock? -> backorder: [No] Create Backorder
+process_payment -> payment_ok?: Payment Successful?
+payment_ok? -> ship_order: [Yes] Prepare Shipment
+payment_ok? -> payment_failed: [No] Payment Failed
+ship_order -> tracking: Generate Tracking Number
+tracking -> notify_customer: Send Confirmation Email
+notify_customer -> end: Order Complete
+payment_failed -> retry_payment: Retry Payment
+retry_payment -> process_payment: Process Again
+backorder -> notify_delay: Notify Customer of Delay
+notify_delay -> end: Wait for Restock`
     }
   ]
 };
