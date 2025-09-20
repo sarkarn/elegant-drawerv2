@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { DiagramType, DiagramData, DiagramConfig, RenderingEngine, ViewportTransform } from '../types/diagram';
+import { getExamplesForType, type DiagramExample } from '../data/examples';
 
 interface DiagramState {
   // Current diagram data
@@ -32,6 +33,8 @@ interface DiagramState {
   toggleTheme: () => void;
   exportDiagram: (format: string) => Promise<void>;
   importDiagram: (content: string, type: DiagramType) => void;
+  loadExample: (exampleName: string) => void;
+  getAvailableExamples: () => DiagramExample[];
 }
 
 const defaultConfig: DiagramConfig = {
@@ -154,6 +157,26 @@ export const useDiagramStore = create<DiagramState>()(
       } catch (error) {
         set({ error: 'Failed to import diagram', isLoading: false });
       }
+    },
+
+    loadExample: (exampleName: string) => {
+      const { config } = get();
+      const examples = getExamplesForType(config.type);
+      const example = examples.find(ex => ex.name === exampleName);
+      
+      if (example) {
+        set({
+          inputText: example.content,
+          error: null,
+        });
+      } else {
+        set({ error: `Example "${exampleName}" not found` });
+      }
+    },
+
+    getAvailableExamples: () => {
+      const { config } = get();
+      return getExamplesForType(config.type);
     },
   }))
 );

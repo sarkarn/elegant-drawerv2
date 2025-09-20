@@ -1,17 +1,9 @@
 import React from 'react';
 import { useDiagramStore } from './stores/diagramStore';
 import { parseDiagramText } from './utils/diagramParser';
-import type { DiagramType } from './types/diagram';
 import { InteractiveDiagramViewer } from './components/diagrams/InteractiveDiagramViewer';
-import { Moon, Sun, Upload, Play, Eraser, Copy, Save } from 'lucide-react';
-
-const diagramTypes: Array<{ value: DiagramType; label: string }> = [
-  { value: 'class', label: 'Class Diagram' },
-  { value: 'sequence', label: 'Sequence Diagram' },
-  { value: 'flow', label: 'Flow Diagram' },
-  { value: 'usecase', label: 'Use Case Diagram' },
-  { value: 'mindmap', label: 'Mind Map' },
-];
+import { ControlBar } from './components/layout/ControlBar';
+import { Moon, Sun, Play, Eraser, Copy, Save } from 'lucide-react';
 
 const examples = {
   class: `class User {
@@ -65,7 +57,6 @@ function App() {
     inputText,
     currentDiagram,
     error,
-    setDiagramType,
     setInputText,
     setDiagramData,
     setError,
@@ -131,18 +122,6 @@ function App() {
     }
   };
 
-  const handleFileLoad = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        setInputText(content);
-      };
-      reader.readAsText(file);
-    }
-  };
-
   return (
     <div className="fixed inset-0 grid grid-rows-[5vh_5vh_1fr] bg-gray-50 dark:bg-gray-900">
       {/* Header Bar */}
@@ -160,37 +139,7 @@ function App() {
       </header>
 
       {/* Control Bar */}
-      <nav className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
-        <div className="flex items-center space-x-4">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Diagram Type:
-          </label>
-          <select
-            value={config.type}
-            onChange={(e) => setDiagramType(e.target.value as DiagramType)}
-            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-          >
-            {diagramTypes.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Load from file:</span>
-          <label className="cursor-pointer inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <Upload className="w-4 h-4 mr-2" />
-            Choose File
-            <input
-              type="file"
-              accept=".txt,.json"
-              onChange={handleFileLoad}
-              className="hidden"
-            />
-          </label>
-        </div>
-      </nav>
+      <ControlBar />
 
       {/* Main Content Area */}
       <main className="grid grid-cols-[20%_80%] overflow-hidden">
