@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDiagramStore } from '../../stores/diagramStore';
 import type { DiagramType } from '../../types/diagram';
-import { Upload, FileImage } from 'lucide-react';
+import { Upload } from 'lucide-react';
 
 const diagramTypes: Array<{ value: DiagramType; label: string }> = [
   { value: 'class', label: 'Class Diagram' },

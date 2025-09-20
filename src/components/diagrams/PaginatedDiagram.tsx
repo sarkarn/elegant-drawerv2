@@ -34,19 +34,24 @@ export function PaginatedDiagram({
 
   // If only one page, render normally without pagination controls
   if (pages.length <= 1) {
+    const currentPageData = pages[0] || { nodes: data.nodes, edges: data.edges, viewBox: { x: 0, y: 0, width: 800, height: 600 } };
+    
     return (
       <div className={`diagram-container ${className}`}>
         <svg
-          viewBox={`${pages[0]?.viewBox.x || 0} ${pages[0]?.viewBox.y || 0} ${pages[0]?.viewBox.width || 800} ${pages[0]?.viewBox.height || 600}`}
+          viewBox={`${currentPageData.viewBox.x} ${currentPageData.viewBox.y} ${currentPageData.viewBox.width} ${currentPageData.viewBox.height}`}
           className="w-full h-full"
           style={{ minHeight: '400px' }}
-        >
-          {pages[0] && SVGRenderer.render(
-            document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
-            { nodes: pages[0].nodes, edges: pages[0].edges, metadata: data.metadata },
-            config
-          )}
-        </svg>
+          ref={(svgElement) => {
+            if (svgElement) {
+              SVGRenderer.render(
+                svgElement,
+                { nodes: currentPageData.nodes, edges: currentPageData.edges, metadata: data.metadata },
+                config
+              );
+            }
+          }}
+        />
       </div>
     );
   }
